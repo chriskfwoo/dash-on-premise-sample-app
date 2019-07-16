@@ -3,11 +3,10 @@ from .Column import Column
 
 
 def Header(title, app):
-    height = 60
+    height = 40
     return html.Div(
         style={
-            'borderBottom': 'thin lightgrey solid',
-            'marginRight': 20,
+            'marginTop': 35,
             'marginBottom': 20,
             'height': height
         },
@@ -26,6 +25,7 @@ def Header(title, app):
                     style={
                         'float': 'right',
                         'height': height,
+                        'width': 'auto'
                     }
                 )
             )

@@ -1,69 +1,106 @@
+import os
 import dash
-from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import dash_html_components as html
-
-import pandas as pd
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 from sqlalchemy import create_engine
-import os
+from components import Header, Row
 
-con_string = 'postgresql+pg8000' + os.getenv('DATABASE_URL').lstrip('postgres')
+
+# connect to database
+con_string = f"postgresql+pg8000{os.getenv('DATABASE_URL').lstrip('postgres')}"
 engine = create_engine(con_string)
 connection = engine.connect()
 
-df = pd.DataFrame(dict(a=[1,2,3],b=[4,5,6]))
-df.to_sql('integers', connection, if_exists='append')
+app = dash.Dash(__name__)
 
+# expose the server variable for deployments
+server = app.server
 
-df2 = pd.read_sql('SELECT * FROM integers', connection)
-
-
-from components import Column, Header, Row
-
-app = dash.Dash(
-    __name__
-)
-
-server = app.server  # Expose the server variable for deployments
-
-# Standard Dash app code below
-app.layout = html.Div(className='container', children=[
-
-    Header('Sample App', app),
-
+# standard Dash app code below
+app.layout = html.Div([
+    Header("PostgreSQL DEMO APP", app),
     Row([
-        Column(width=4, children=[
-            dcc.Dropdown(
-                id='dropdown',
-                options=[{'label': i, 'value': i} for i in ['LA', 'NYC', 'MTL']],
-                value='LA'
+        html.Div([
+            dcc.Textarea(
+                id="sql__textarea__input",
+                placeholder="Enter a SQL command...",
+                value="",
+                className="sql__textarea"
+            ),
+            html.Div([
+                html.Button(
+                    "Execute query",
+                    id="sql__execute__handler",
+                    className="sql__button",
+                    n_clicks_timestamp=0
+                ),
+                html.Button(
+                    "Reset DB",
+                    id="sql__reset__handler",
+                    className="sql__button--red",
+                    n_clicks_timestamp=0
+                ),
+            ], className="btn--group")
+        ]),
+    ]),
+    Row([
+        html.Div([
+            html.H4("Raw query output"),
+            html.Pre(
+                [""],
+                id="sql__output",
+                className="sql__pre"
             )
         ]),
-        Column(width=8, children=[
-            dcc.Graph(id='graph')
-        ])
-    ])
-])
+    ]),
+], className="container")
 
 
-@app.callback(Output('graph', 'figure'),
-              [Input('dropdown', 'value')])
-def update_graph(value):
-    return {
-        'data': [{
-            'x': df2.index,
-            'y': df2.a
-        }],
-        'layout': {
-            'title': value,
-            'margin': {
-                'l': 60,
-                'r': 10,
-                't': 40,
-                'b': 60
-            }
-        }
-    }
+@app.callback(
+    Output("sql__output", "children"),
+    [
+        Input("sql__execute__handler", "n_clicks_timestamp"),
+        Input("sql__reset__handler", "n_clicks_timestamp")
+    ],
+    [State("sql__textarea__input", "value")]
+)
+def execute_query(btn_execute, btn_reset, value):
+
+    if value == "" or value is None:
+        raise PreventUpdate
+
+    # reset button is clicked
+    if int(btn_execute) < int(btn_reset):
+        return drop_all_tables()
+
+    # execute button clicked
+    return execute_query(value)
+
+
+def execute_query(statement):
+    """ Execute PostgreSQL statement. """
+
+    try:
+        result = connection.execute(statement).fetchall()
+        print(result)
+        return f"Success: \n {result}"
+    except Exception as error:
+        print(error)
+        return f"Error: \n {error}"
+
+
+def drop_all_tables():
+    """ Drops all tables and schema. """
+
+    try:
+        first_stmt = connection.execute("DROP SCHEMA public CASCADE;")
+        second_stmt = connection.execute("CREATE SCHEMA public;")
+        return f"Success: \n {first_stmt} \n {second_stmt}"
+    except Exception as error:
+        return f"Error: \n {error}"
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

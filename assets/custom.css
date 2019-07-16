@@ -1,0 +1,59 @@
+body {
+    background-color: #212B36;
+    font-family: monospace !important;
+    color: #50B83C !important;
+}
+
+.sql__textarea:focus,
+.sql__textarea {
+    background-color: #212B36;
+    border-left: 1px solid #50B83C;
+    border-bottom: none;
+    color: #50B83C;
+    font-size: 1.6em;
+    width: 100%;
+    overflow: auto;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    resize: none; 
+    margin-bottom: 25px;
+    min-height: 200px !important;
+}
+
+.btn--group {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sql__button {
+    background-color: #50B83C;
+    border: 1px solid #50B83C;
+    color: white;
+    float: right;
+    margin-right: 15px;
+}
+.sql__button--red {
+    background-color: #BF0711;
+    border: 1px solid #BF0711;
+    color: white;
+    float: right;
+}
+
+.sql__pre {
+    color: #F4F6F8;
+    font-size: 1.2em;
+    border-left: 1px solid white;
+    padding: 6px 10px;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.mt-2 {
+    padding-top: 20px;
+}
+
