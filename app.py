@@ -29,23 +29,23 @@ app.layout = html.Div([
                     ##### Sample Queries
 
                     ```
-                    CREATE TABLE Persons (
-                        PersonID int,
-                        LastName varchar(255)
+                    CREATE TABLE Account (
+                        Email varchar(255) PRIMARY KEY,
+                        Username varchar(255)
                     );
                     ```
 
                     ```
-                    INSERT INTO Persons (PersonId, LastName)
-                    VALUES (1, 'woo');
+                    INSERT INTO Account (Email, Username)
+                    VALUES ('chriswoo@gmail.com', 'Chris');
                     ```
 
                     ```
-                    SELECT * FROM Persons;
+                    SELECT * FROM Account;
                     ```
 
                     ```
-                    DROP TABLE Persons;
+                    DROP TABLE Account;
                     ```
 
                 ''')
@@ -56,7 +56,7 @@ app.layout = html.Div([
                 html.H5("SQL Editor"),
                 dcc.Textarea(
                     id="sql__textarea__input",
-                    placeholder="Enter a SQL command...",
+                    placeholder="> Enter a SQL command...",
                     value="",
                     className="sql__textarea"
                 ),
@@ -66,13 +66,14 @@ app.layout = html.Div([
                         id="sql__execute__handler",
                         className="sql__button",
                         n_clicks_timestamp=0,
-                        title="awesome"
+                        title="Attempt to execute SQL query in the editor."
                     ),
                     html.Button(
                         "Reset DB",
                         id="sql__reset__handler",
                         className="sql__button--red",
-                        n_clicks_timestamp=0
+                        n_clicks_timestamp=0,
+                        title="Reset the database schema and drop all tables."
                     ),
                 ], className="btn--group")
             ]),
@@ -118,15 +119,15 @@ app.layout = html.Div([
 )
 def execute_query(btn_execute, btn_reset, value, history):
 
-    if value == "" or value is None:
-        raise PreventUpdate
-
-    # reset button is clicked
+    # reset button clicked
     if int(btn_execute) < int(btn_reset):
         history_storage = add_to_history(int(btn_reset), "DROP TABLES", history)
         return drop_all_tables(), output_history(history_storage), history_storage,
 
     # execute button clicked
+    if value == "" or value is None:
+        raise PreventUpdate
+
     history_storage = add_to_history(int(btn_execute), value, history)
     return execute_query(value), output_history(history_storage), history_storage
 

@@ -42,6 +42,7 @@ code {
     margin-bottom: 25px;
     padding: 15px;
     min-height: 250px !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 .btn--group {
@@ -61,6 +62,15 @@ code {
     border: 1px solid #BF0711;
     color: white;
     float: right;
+}
+
+.sql__button--red:hover {
+    opacity: 0.5;
+    border: 1px solid #BF0711;
+}
+.sql__button:hover {
+    opacity: 0.5;
+    border: 1px solid #50B83C;
 }
 
 .sql__pre {
