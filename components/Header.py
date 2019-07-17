@@ -16,6 +16,7 @@ def Header(title, app):
                 children=title,
                 style={
                     'fontSize': 35,
+                    'color': "#108043"
                 }
             ),
             Column(
